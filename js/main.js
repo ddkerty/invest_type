@@ -1,6 +1,5 @@
-// js/main.js
 import { fetchStockData } from './api.js';
-import { classifyPortfolio } from './analyzer.js';
+import { classifyPortfolio, specialEtfWeights } from './analyzer.js';
 
 // --- DOM 요소 가져오기 ---
 const tickerListContainer = document.getElementById('ticker-list-container');
@@ -14,6 +13,8 @@ const resultTypeNameElem = document.getElementById('result-type-name');
 const resultDescriptionElem = document.getElementById('result-description');
 const memberListElem = document.getElementById('member-list');
 const sectorChartCanvas = document.getElementById('sector-chart');
+const infoIcon = document.getElementById('special-etf-info');
+const infoWrapper = document.getElementById('info-wrapper');
 let sectorChart = null;
 
 // --- 함수 정의 ---
@@ -41,8 +42,16 @@ function resetInputFields() {
     addNewRow();
     // 첫번째 행은 예시 값으로 채워줍니다.
     const firstRow = tickerListContainer.firstElementChild;
-    firstRow.querySelector('.ticker-input').value = "AAPL";
-    firstRow.querySelector('.quantity-input').value = "10";
+    if(firstRow) {
+        firstRow.querySelector('.ticker-input').value = "AAPL";
+        firstRow.querySelector('.quantity-input').value = "10";
+        // 두번째 행 예시 값 추가
+        const secondRow = firstRow.nextElementSibling;
+        if(secondRow){
+            secondRow.querySelector('.ticker-input').value = "JNJ";
+            secondRow.querySelector('.quantity-input').value = "20";
+        }
+    }
     resultCard.classList.add('hidden');
 }
 
@@ -69,7 +78,7 @@ function getInputsFromDOM() {
     return inputs;
 }
 
-
+// 메인 분석 실행 함수
 async function handleAnalysis() {
     setLoadingState(true);
     const inputs = getInputsFromDOM();
@@ -89,8 +98,6 @@ async function handleAnalysis() {
         const results = await Promise.all(promises);
         const portfolioData = results.filter(res => res !== null);
 
-        // --- [수정된 부분 시작] ---
-        // 없는 티커를 찾아내 사용자에게 알려주는 로직
         if (portfolioData.length < inputs.length) {
             const foundSymbols = new Set(portfolioData.map(stock => stock.symbol));
             const missingTickers = inputs
@@ -101,11 +108,10 @@ async function handleAnalysis() {
                 alert(`'${missingTickers.join(', ')}' 해당 티커가 데이터에 존재하지 않아 분석에서 제외됩니다.`);
             }
         }
-        // --- [수정된 부분 끝] ---
-
+        
         if (portfolioData.length === 0) {
             alert('분석할 유효한 주식 정보를 찾지 못했습니다. 티커를 다시 확인해주세요.');
-            setLoadingState(false); 
+            setLoadingState(false);
             return;
         }
 
@@ -119,6 +125,7 @@ async function handleAnalysis() {
         setLoadingState(false);
     }
 }
+
 // 결과 렌더링 함수
 function renderResults(result, portfolioData) {
     resultIconElem.innerHTML = `<i class="${result.icon} ${result.color}"></i>`;
@@ -169,6 +176,7 @@ function renderSectorChart(sectorCounts) {
     });
 }
 
+
 // --- 이벤트 리스너 설정 ---
 analyzeBtn.addEventListener('click', handleAnalysis);
 addRowBtn.addEventListener('click', addNewRow);
@@ -184,3 +192,22 @@ tickerListContainer.addEventListener('click', function(e) {
         }
     }
 });
+
+// 정보 아이콘 툴팁 기능
+if (infoIcon && infoWrapper) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    
+    const specialEtfList = Object.keys(specialEtfWeights).join(', ');
+    tooltip.textContent = '특별 분석 ETF: ' + specialEtfList;
+    
+    infoWrapper.appendChild(tooltip);
+
+    infoIcon.addEventListener('mouseover', () => {
+        tooltip.style.display = 'block';
+    });
+
+    infoIcon.addEventListener('mouseout', () => {
+        tooltip.style.display = 'none';
+    });
+}

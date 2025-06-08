@@ -204,3 +204,46 @@ header h1 {
 .hidden {
     display: none;
 }
+
+/* style.css 추가 부분 (정보 아이콘 및 툴팁) */
+
+#info-wrapper {
+    position: relative; /* 툴팁 위치의 기준점 */
+    display: inline-block;
+}
+
+#special-etf-info {
+    color: #3498db;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-left: 8px;
+}
+
+.tooltip {
+    display: none; /* 평소에는 숨겨 둠 */
+    position: absolute;
+    bottom: 150%; /* 아이콘 위쪽에 위치 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #34495e;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    width: 280px; /* 툴팁 너비 */
+    z-index: 10;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+/* 툴팁의 꼬리 부분 만들기 */
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #34495e transparent transparent transparent;
+}
