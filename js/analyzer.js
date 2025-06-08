@@ -14,7 +14,7 @@ export const specialEtfWeights = {
     
     // 다우존스 지수 추종 ETF (가치주 중심이므로 안정/배당에 가중치)
     "DIA": { sector: "Dow Jones Index", aggressive: 1, stable: 2, dividend: 2 },
-
+    "SCHD": { sector: "Dow Jones Index", aggressive: 1, stable: 2, dividend: 2 },
     // 섹터 ETF 예시
     "XLK": { sector: "Technology ETF", aggressive: 2, stable: 1, dividend: 0 },
     "XLF": { sector: "Financial ETF", aggressive: 1, stable: 1, dividend: 1 },
