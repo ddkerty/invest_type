@@ -44,10 +44,30 @@ const sectorWeights = {
 };
 
 const resultTypes = {
-    aggressive: { name: "공격형 포트폴리오", icon: "fa-solid fa-rocket", color: "icon-aggressive", desc: "월스트리트의 맹수! 변동성의 파도를 서핑하며, 짜릿한 수익률을 사냥하는 공격적인 투자 스타일입니다." },
-    stable:     { name: "안정형 포트폴리오", icon: "fa-solid fa-shield-halved", color: "icon-stable", desc: "토끼와의 경주에서 결국 이기는 건 거북이! 화려하진 않아도, 매일 꾸준히 목표를 향해 나아가는 묵직한 한 걸음입니다." },
-    dividend:   { name: "배당형 포트폴리오", icon: "fa-solid fa-gem", color: "icon-dividend", desc: "황금알을 낳는 거위를 키우는 현명한 투자자! 꾸준히 들어오는 현금 흐름으로 복리의 마법을 기다리고 있습니다." },
-    balanced:   { name: "밸런스형 포트폴리오", icon: "fa-solid fa-scale-balanced", color: "icon-balanced", desc: "공격, 방어, 안정감까지... 모든 스탯을 균형 있게 찍은 육각형 워리어! 어떤 몬스터(시장)가 나타나도 자신 있습니다." }
+    aggressive: { 
+        name: "우주 탐험가 🚀", 
+        icon: "fa-solid fa-rocket", 
+        color: "icon-aggressive", 
+        desc: "당신은 한계라는 단어를 모르는 존재! 하늘 높이 치솟는 기회를 향해 망설임 없이 돌진합니다."
+    },
+    stable: { 
+        name: "불굴의 등반가 🏔️", 
+        icon: "fa-solid fa-mountain", 
+        color: "icon-stable", 
+        desc: "높은 정상보다 안전한 등산로를 택하는 당신. 한 걸음씩 꾸준히, 결코 흔들리지 않습니다."
+    },
+    dividend: { 
+        name: "황금알 거위 사육사 🌾", 
+        icon: "fa-solid fa-wheat-awn", 
+        color: "icon-dividend", 
+        desc: "황금알을 낳는 거위를 키우는 현명한 투자자! 꾸준히 들어오는 현금 흐름으로 복리의 마법을 기다리고 있습니다."
+    },
+    balanced: { 
+        name: "외줄 타는 현자", 
+        icon: "fa-solid fa-scale-balanced", 
+        color: "icon-balanced", 
+        desc: "공격이 최선의 방어일 때도, 움츠리는 것이 지혜일 때도 있음을 아는 현자. 성장과 안정 사이에서 절묘한 줄타기를 하고 있군요."
+    }
 };
 
 export function classifyPortfolio(portfolioData) {
