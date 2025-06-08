@@ -200,7 +200,7 @@ if (infoIcon && infoWrapper) {
     tooltip.className = 'tooltip';
     
     const specialEtfList = Object.keys(specialEtfWeights).join(', ');
-    tooltip.textContent = '특별 분석 ETF: ' + specialEtfList;
+    tooltip.textContent = '분석 가능 ETF: ' + specialEtfList;
     
     infoWrapper.appendChild(tooltip);
 
