@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My 투자 성향 포트폴리오 분석기</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="js/main.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My 투자 성향 포트폴리오 분석기</h1>
+            <p>보유한 주식의 섹터를 기반으로 당신의 투자 스타일을 알아보세요!</p>
+        </header>
+
+    <div class="input-section">
+        <div class="input-header">
+            <span class="header-label ticker-header">티커</span>
+            <span class="header-label quantity-header">수량</span>
+            <span class="header-label remove-header"></span>
+        </div>
+
+        <div id="ticker-list-container">
+            <div class="ticker-row">
+                <input type="text" class="ticker-input" placeholder="예: AAPL">
+                <input type="number" class="quantity-input" placeholder="예: 10" min="1" value="10">
+                <button class="remove-row-btn" aria-label="종목 삭제">&times;</button>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button id="add-row-btn">+ 행 추가</button>
+            <button id="reset-btn">모두 지우기</button>
+        </div>
+    </div>
+    <button id="analyze-btn">분석 시작!</button>
+        
+        <div id="loading-spinner" class="hidden"></div>
+
+        <div id="result-card" class="hidden">
+            <div id="result-icon"></div>
+            <h2 id="result-type-name"></h2>
+            <p id="result-description"></p>
+            
+            <h3>분석 대상 종목</h3>
+            <div id="member-list"></div>
+
+            <h3>포트폴리오 영토 현황 (섹터 분산)</h3>
+            <div class="chart-container">
+                <canvas id="sector-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
