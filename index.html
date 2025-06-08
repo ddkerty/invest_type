@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>미국주식 투자 성향 분석기</title>
+    <meta name="description" content="보유한 미국 주식의 섹터와 수량을 기반으로 투자 스타일을 분석합니다.">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,30 +14,36 @@
     <div class="container">
         <header>
             <h1>My 투자 성향 포트폴리오 분석기</h1>
-            <p>보유한 주식의 섹터를 기반으로 당신의 투자 스타일을 알아보세요!</p>
+            <p>보유한 주식의 섹터와 수량을 기반으로 투자 스타일을 알아보세요!</p>
         </header>
 
-    <div class="input-section">
-        <div class="input-header">
-            <span class="header-label ticker-header">티커</span>
-            <span class="header-label quantity-header">수량</span>
-            <span class="header-label remove-header"></span>
-        </div>
+        <div class="input-section">
+            <div class="input-header">
+                <span class="header-label ticker-header">티커</span>
+                <span class="header-label quantity-header">수량</span>
+                <span class="header-label remove-header"></span>
+            </div>
 
-        <div id="ticker-list-container">
-            <div class="ticker-row">
-                <input type="text" class="ticker-input" placeholder="예: AAPL">
-                <input type="number" class="quantity-input" placeholder="예: 10" min="1" value="10">
-                <button class="remove-row-btn" aria-label="종목 삭제">&times;</button>
+            <div id="ticker-list-container">
+                <div class="ticker-row">
+                    <input type="text" class="ticker-input" placeholder="예: AAPL" value="AAPL">
+                    <input type="number" class="quantity-input" placeholder="예: 10" min="1" value="10">
+                    <button class="remove-row-btn" aria-label="종목 삭제">&times;</button>
+                </div>
+                <div class="ticker-row">
+                    <input type="text" class="ticker-input" placeholder="예: JNJ" value="JNJ">
+                    <input type="number" class="quantity-input" placeholder="예: 20" min="1" value="20">
+                    <button class="remove-row-btn" aria-label="종목 삭제">&times;</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="add-row-btn">+ 행 추가</button>
+                <button id="reset-btn">모두 지우기</button>
             </div>
         </div>
 
-        <div class="button-group">
-            <button id="add-row-btn">+ 행 추가</button>
-            <button id="reset-btn">모두 지우기</button>
-        </div>
-    </div>
-    <button id="analyze-btn">분석 시작!</button>
+        <button id="analyze-btn">분석 시작!</button>
         
         <div id="loading-spinner" class="hidden"></div>
 
@@ -48,7 +55,7 @@
             <h3>분석 대상 종목</h3>
             <div id="member-list"></div>
 
-            <h3>포트폴리오 영토 현황 (섹터 분산)</h3>
+            <h3>포트폴리오 영토 현황 (수량 기준 섹터 분산)</h3>
             <div class="chart-container">
                 <canvas id="sector-chart"></canvas>
             </div>
