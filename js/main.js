@@ -1,10 +1,11 @@
-// js/main.js (전체 교체)
+// js/main.js
 import { fetchStockData } from './api.js';
 import { classifyPortfolio } from './analyzer.js';
 
 // --- DOM 요소 가져오기 ---
 const tickerListContainer = document.getElementById('ticker-list-container');
 const addRowBtn = document.getElementById('add-row-btn');
+const resetBtn = document.getElementById('reset-btn');
 const analyzeBtn = document.getElementById('analyze-btn');
 const loadingSpinner = document.getElementById('loading-spinner');
 const resultCard = document.getElementById('result-card');
@@ -15,25 +16,43 @@ const memberListElem = document.getElementById('member-list');
 const sectorChartCanvas = document.getElementById('sector-chart');
 let sectorChart = null;
 
-
 // --- 함수 정의 ---
+
+// 새로운 입력 행 HTML 템플릿
+const createTickerRowHTML = () => `
+    <input type="text" class="ticker-input" placeholder="티커">
+    <input type="number" class="quantity-input" placeholder="수량" min="1" value="1">
+    <button class="remove-row-btn" aria-label="종목 삭제">&times;</button>
+`;
 
 // 새로운 입력 행을 추가하는 함수
 function addNewRow() {
     const row = document.createElement('div');
     row.className = 'ticker-row';
-    row.innerHTML = `
-        <input type="text" class="ticker-input" placeholder="티커 (예: MSFT)">
-        <input type="number" class="quantity-input" placeholder="수량" min="1" value="1">
-        <button class="remove-row-btn">&times;</button>
-    `;
+    row.innerHTML = createTickerRowHTML();
     tickerListContainer.appendChild(row);
 }
 
-// 분석 실행 함수
-// main.js 리팩토링 예시
+// 모든 입력 행을 지우고 초기 상태로 만드는 함수
+function resetInputFields() {
+    tickerListContainer.innerHTML = '';
+    const initialRowCount = 2;
+    for (let i = 0; i < initialRowCount; i++) {
+        addNewRow();
+    }
+    resultCard.classList.add('hidden');
+}
 
-// 1. DOM에서 입력 값을 읽어오는 함수
+// 로딩 상태를 관리하는 헬퍼 함수
+function setLoadingState(isLoading) {
+    loadingSpinner.classList.toggle('hidden', !isLoading);
+    if (isLoading) {
+        resultCard.classList.add('hidden');
+    }
+    analyzeBtn.disabled = isLoading;
+}
+
+// DOM에서 입력 값을 읽어오는 함수
 function getInputsFromDOM() {
     const tickerRows = document.querySelectorAll('.ticker-row');
     const inputs = [];
@@ -47,10 +66,9 @@ function getInputsFromDOM() {
     return inputs;
 }
 
-// 2. 메인 분석 실행 함수 (더 깔끔해짐)
+// 메인 분석 실행 함수
 async function handleAnalysis() {
-    setLoadingState(true); // 로딩 상태 시작
-
+    setLoadingState(true);
     const inputs = getInputsFromDOM();
 
     if (inputs.length === 0) {
@@ -71,7 +89,6 @@ async function handleAnalysis() {
         if (portfolioData.length < inputs.length) {
             alert('입력한 티커 중 일부는 데이터베이스에 없습니다. 해당 티커는 분석에서 제외됩니다.');
         }
-
         if (portfolioData.length === 0) {
             alert('유효한 주식 정보를 찾지 못했습니다. 티커를 다시 확인해주세요.');
             return;
@@ -84,72 +101,11 @@ async function handleAnalysis() {
         console.error("Analysis failed:", error);
         alert("분석 중 오류가 발생했습니다.");
     } finally {
-        setLoadingState(false); // 로딩 상태 종료
+        setLoadingState(false);
     }
 }
 
-// 3. 로딩 상태를 관리하는 헬퍼 함수
-function setLoadingState(isLoading) {
-    loadingSpinner.classList.toggle('hidden', !isLoading);
-    resultCard.classList.toggle('hidden', isLoading);
-    analyzeBtn.disabled = isLoading;
-}
-
-// (기존의 addNewRow, renderResults, renderSectorChart, 이벤트 리스너 등은 그대로 유지)
-
-    // 각 행에서 티커와 수량 정보를 수집
-    const tickerRows = document.querySelectorAll('.ticker-row');
-    const inputs = [];
-    tickerRows.forEach(row => {
-        const ticker = row.querySelector('.ticker-input').value.trim().toUpperCase();
-        const quantity = parseInt(row.querySelector('.quantity-input').value, 10);
-        if (ticker && quantity > 0) {
-            inputs.push({ ticker, quantity });
-        }
-    });
-
-    if (inputs.length === 0) {
-        alert('분석할 주식을 1개 이상 입력해주세요.');
-        loadingSpinner.classList.add('hidden');
-        analyzeBtn.disabled = false;
-        return;
-    }
-
-    try {
-        const promises = inputs.map(async (input) => {
-            const stockData = await fetchStockData(input.ticker);
-            if (stockData) {
-                // 수량 정보를 추가하여 반환
-                return { ...stockData, quantity: input.quantity };
-            }
-            return null;
-        });
-
-        const results = await Promise.all(promises);
-        const portfolioData = results.filter(res => res !== null);
-
-        if (portfolioData.length < inputs.length) {
-            alert('입력한 티커 중 일부는 데이터베이스에 없습니다. 해당 티커는 분석에서 제외됩니다.');
-        }
-
-        if (portfolioData.length === 0) {
-            alert('유효한 주식 정보를 찾지 못했습니다. 티커를 다시 확인해주세요.');
-            return;
-        }
-
-        const classificationResult = classifyPortfolio(portfolioData);
-        renderResults(classificationResult, portfolioData);
-
-    } catch (error) {
-        console.error("Analysis failed:", error);
-        alert("분석 중 오류가 발생했습니다.");
-    } finally {
-        loadingSpinner.classList.add('hidden');
-        analyzeBtn.disabled = false;
-    }
-
-
-// 결과 렌더링 함수 (변경 없음)
+// 결과 렌더링 함수
 function renderResults(result, portfolioData) {
     resultIconElem.innerHTML = `<i class="${result.icon} ${result.color}"></i>`;
     resultTypeNameElem.textContent = result.name;
@@ -162,14 +118,14 @@ function renderResults(result, portfolioData) {
     resultCard.scrollIntoView({ behavior: 'smooth' });
 }
 
-// 차트 렌더링 함수 (툴팁 콜백 수정)
+// 차트 렌더링 함수
 function renderSectorChart(sectorCounts) {
-    if (sectorChart) {
-        sectorChart.destroy();
-    }
-    const chartColors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#34495e', '#1abc9c', '#e67e22', '#d35400'];
+    if (sectorChart) sectorChart.destroy();
+    
+    const chartColors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#34495e', '#1abc9c', '#e67e22'];
     const labels = Object.keys(sectorCounts);
     const data = Object.values(sectorCounts);
+
     sectorChart = new Chart(sectorChartCanvas, {
         type: 'doughnut',
         data: {
@@ -190,7 +146,7 @@ function renderSectorChart(sectorCounts) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.label}: ${context.parsed}주`;
+                            return `${context.label}: ${context.parsed.toLocaleString()}주`;
                         }
                     }
                 }
@@ -199,42 +155,18 @@ function renderSectorChart(sectorCounts) {
     });
 }
 
-
 // --- 이벤트 리스너 설정 ---
-
-// 분석 시작 버튼
 analyzeBtn.addEventListener('click', handleAnalysis);
-
-// 행 추가 버튼
 addRowBtn.addEventListener('click', addNewRow);
+resetBtn.addEventListener('click', resetInputFields);
 
-// 행 삭제 버튼 (이벤트 위임)
+// 행 삭제 버튼 (이벤트 위임 방식)
 tickerListContainer.addEventListener('click', function(e) {
     if (e.target && e.target.classList.contains('remove-row-btn')) {
-        // 최소 1개의 행은 남겨둡니다.
         if (tickerListContainer.childElementCount > 1) {
             e.target.closest('.ticker-row').remove();
         } else {
             alert('최소 1개의 종목은 입력해야 합니다.');
         }
     }
-// main.js
-const resetBtn = document.getElementById('reset-btn');
-
-resetBtn.addEventListener('click', () => {
-    tickerListContainer.innerHTML = ''; // 모든 행 삭제
-    addNewRow(); // 기본 한 줄 추가
-    resultCard.classList.add('hidden'); // 결과 카드 숨기기
-});
-
-// addNewRow 함수 수정
-function addNewRow() {
-    const row = document.createElement('div');
-    row.className = 'ticker-row';
-    row.innerHTML = `
-        <input type="text" class="ticker-input" placeholder="티커 (예: MSFT)">
-        <input type="number" class="quantity-input" placeholder="수량" min="1" value="1">
-        <button class="remove-row-btn" aria-label="종목 삭제">&times;</button> `;
-    tickerListContainer.appendChild(row);
-}
 });

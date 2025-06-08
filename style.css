@@ -45,6 +45,7 @@ header h1 {
     gap: 10px;
     align-items: center;
     padding: 0 10px;
+    margin-bottom: 8px;
     font-size: 14px;
     color: #555;
     font-weight: 700;
