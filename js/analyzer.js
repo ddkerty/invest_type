@@ -10,6 +10,7 @@ export const specialEtfWeights = {
 
     // 나스닥 100 지수 추종 ETF (기술주 중심이므로 공격성에 높은 가중치)
     "QQQ": { sector: "Nasdaq 100 Index", aggressive: 3, stable: 1, dividend: 0 },
+    "QQQM": { sector: "Nasdaq 100 Index", aggressive: 3, stable: 1, dividend: 0 },
     
     // 다우존스 지수 추종 ETF (가치주 중심이므로 안정/배당에 가중치)
     "DIA": { sector: "Dow Jones Index", aggressive: 1, stable: 2, dividend: 2 },
