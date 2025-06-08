@@ -36,10 +36,13 @@ function addNewRow() {
 // 모든 입력 행을 지우고 초기 상태로 만드는 함수
 function resetInputFields() {
     tickerListContainer.innerHTML = '';
-    const initialRowCount = 2;
-    for (let i = 0; i < initialRowCount; i++) {
-        addNewRow();
-    }
+    // 기본으로 2개의 행을 다시 만들어 줍니다.
+    addNewRow();
+    addNewRow();
+    // 첫번째 행은 예시 값으로 채워줍니다.
+    const firstRow = tickerListContainer.firstElementChild;
+    firstRow.querySelector('.ticker-input').value = "AAPL";
+    firstRow.querySelector('.quantity-input').value = "10";
     resultCard.classList.add('hidden');
 }
 
@@ -66,7 +69,7 @@ function getInputsFromDOM() {
     return inputs;
 }
 
-// 메인 분석 실행 함수
+
 async function handleAnalysis() {
     setLoadingState(true);
     const inputs = getInputsFromDOM();
@@ -86,11 +89,23 @@ async function handleAnalysis() {
         const results = await Promise.all(promises);
         const portfolioData = results.filter(res => res !== null);
 
+        // --- [수정된 부분 시작] ---
+        // 없는 티커를 찾아내 사용자에게 알려주는 로직
         if (portfolioData.length < inputs.length) {
-            alert('입력한 티커 중 일부는 데이터베이스에 없습니다. 해당 티커는 분석에서 제외됩니다.');
+            const foundSymbols = new Set(portfolioData.map(stock => stock.symbol));
+            const missingTickers = inputs
+                .map(input => input.ticker)
+                .filter(ticker => !foundSymbols.has(ticker));
+            
+            if (missingTickers.length > 0) {
+                alert(`'${missingTickers.join(', ')}' 해당 티커가 데이터에 존재하지 않아 분석에서 제외됩니다.`);
+            }
         }
+        // --- [수정된 부분 끝] ---
+
         if (portfolioData.length === 0) {
-            alert('유효한 주식 정보를 찾지 못했습니다. 티커를 다시 확인해주세요.');
+            alert('분석할 유효한 주식 정보를 찾지 못했습니다. 티커를 다시 확인해주세요.');
+            setLoadingState(false); 
             return;
         }
 
@@ -104,7 +119,6 @@ async function handleAnalysis() {
         setLoadingState(false);
     }
 }
-
 // 결과 렌더링 함수
 function renderResults(result, portfolioData) {
     resultIconElem.innerHTML = `<i class="${result.icon} ${result.color}"></i>`;
