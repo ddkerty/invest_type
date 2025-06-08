@@ -1,5 +1,7 @@
+// js/main.js (툴팁 기능 포함 최종 버전)
+
 import { fetchStockData } from './api.js';
-import { classifyPortfolio, specialEtfWeights } from './analyzer.js';
+import { classifyPortfolio, specialEtfWeights } from './analyzer.js'; // specialEtfWeights 가져오기
 
 // --- DOM 요소 가져오기 ---
 const tickerListContainer = document.getElementById('ticker-list-container');
@@ -37,17 +39,16 @@ function addNewRow() {
 // 모든 입력 행을 지우고 초기 상태로 만드는 함수
 function resetInputFields() {
     tickerListContainer.innerHTML = '';
-    // 기본으로 2개의 행을 다시 만들어 줍니다.
-    addNewRow();
-    addNewRow();
-    // 첫번째 행은 예시 값으로 채워줍니다.
+    const initialRowCount = 2;
+    for (let i = 0; i < initialRowCount; i++) {
+        addNewRow();
+    }
     const firstRow = tickerListContainer.firstElementChild;
-    if(firstRow) {
+    if (firstRow) {
         firstRow.querySelector('.ticker-input').value = "AAPL";
         firstRow.querySelector('.quantity-input').value = "10";
-        // 두번째 행 예시 값 추가
         const secondRow = firstRow.nextElementSibling;
-        if(secondRow){
+        if (secondRow) {
             secondRow.querySelector('.ticker-input').value = "JNJ";
             secondRow.querySelector('.quantity-input').value = "20";
         }
@@ -152,7 +153,7 @@ function renderSectorChart(sectorCounts) {
         data: {
             labels: labels,
             datasets: [{
-                label: '수량 기준 섹터 비중',
+                label: '수량 기준 비중',
                 data: data,
                 backgroundColor: labels.map((_, i) => chartColors[i % chartColors.length]),
                 borderColor: '#ffffff',
