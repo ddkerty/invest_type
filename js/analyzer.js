@@ -122,4 +122,4 @@ export function classifyPortfolio(portfolioData) {
     // [핵심 수정!] 반환하는 객체에 모든 정보(desc 포함)와 올바른 차트 데이터를 담아 반환
     return { ...resultTypes[finalType], sectorCounts: sectorValues };
 }
-}
+
