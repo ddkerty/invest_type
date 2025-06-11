@@ -63,7 +63,7 @@ const resultTypes = {
         desc: "황금알을 낳는 거위를 키우는 현명한 투자자! 꾸준히 들어오는 현금 흐름으로 복리의 마법을 기다리고 있습니다."
     },
     balanced: { 
-        name: "외줄 타는 현자", 
+        name: "외줄 타는 현자🧙‍♂️", 
         icon: "fa-solid fa-scale-balanced", 
         color: "icon-balanced", 
         desc: "공격이 최선의 방어일 때도, 움츠리는 것이 지혜일 때도 있음을 아는 현자. 성장과 안정 사이에서 절묘한 줄타기를 하고 있군요."
