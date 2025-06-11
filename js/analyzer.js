@@ -70,39 +70,42 @@ const resultTypes = {
     }
 };
 
+// js/analyzer.js 의 classifyPortfolio 함수를 아래 코드로 교체하세요.
+
 export function classifyPortfolio(portfolioData) {
     const points = { aggressive: 0, stable: 0, dividend: 0 };
-    const sectorCounts = {};
+    const sectorValues = {}; 
 
     portfolioData.forEach(stock => {
         let weights;
         let displaySector = "N/A";
         const quantity = stock.quantity || 1;
+        const price = stock.price || 0;
+        const stockValue = quantity * price; // 종목의 총 가치(금액) 계산
 
-        // 1. 특별 ETF 목록에 있는지 먼저 확인
         if (specialEtfWeights[stock.symbol]) {
             const specialEtf = specialEtfWeights[stock.symbol];
             weights = { aggressive: specialEtf.aggressive, stable: specialEtf.stable, dividend: specialEtf.dividend };
             displaySector = specialEtf.sector;
         } else {
-            // 2. 없다면 기존 로직으로 섹터 가중치 적용
             const sectorKey = stock.sector && sectorWeights[stock.sector] ? stock.sector : 'default';
             weights = sectorWeights[sectorKey];
             displaySector = stock.sector || "N/A";
         }
-        
-        points.aggressive += weights.aggressive * quantity;
-        points.stable     += weights.stable * quantity;
-        points.dividend   += weights.dividend * quantity;
 
-        sectorCounts[displaySector] = (sectorCounts[displaySector] || 0) + quantity;
+        // [수정!] 점수 계산에 '투자 금액(stockValue)'을 가중치로 사용하도록 변경
+        points.aggressive += weights.aggressive * stockValue;
+        points.stable     += weights.stable * stockValue;
+        points.dividend   += weights.dividend * stockValue;
+
+        // 차트용 데이터도 '투자 금액' 기준으로 합산
+        sectorValues[displaySector] = (sectorValues[displaySector] || 0) + stockValue;
     });
-    
-    // 이하 점수 계산 및 반환 로직은 동일
+
     const sortedTypes = Object.entries(points).sort((a, b) => b[1] - a[1]);
-    
+
     if (sortedTypes.length === 0 || sortedTypes[0][1] === 0) {
-        return { ...resultTypes.balanced, sectorCounts };
+        return { ...resultTypes.balanced, sectorCounts: sectorValues };
     }
 
     let finalType = sortedTypes[0][0];
@@ -112,10 +115,10 @@ export function classifyPortfolio(portfolioData) {
         const secondMaxPoints = sortedTypes[1][1];
         const pointDifference = maxPoints - secondMaxPoints;
         const threshold = Math.max(2, maxPoints * 0.2);
-        
+
         if (pointDifference < threshold && maxPoints > 0) {
             finalType = 'balanced';
         }
     }
-    return { ...resultTypes[finalType], sectorCounts };
+    return { ...resultTypes.finalType, sectorCounts: sectorValues };
 }
