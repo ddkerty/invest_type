@@ -52,6 +52,8 @@ header h1 {
 }
 
 .header-label.ticker-header { flex-grow: 1; }
+/* [추가] 가격 헤더 스타일 */
+.header-label.price-header { width: 100px; text-align: center; } 
 .header-label.quantity-header { width: 80px; text-align: center; }
 .header-label.remove-header { width: 30px; }
 
@@ -73,6 +75,16 @@ header h1 {
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 15px;
+}
+
+/* [추가] 가격 입력창 스타일 */
+.ticker-row .price-input {
+    width: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    text-align: center;
 }
 
 .ticker-row .quantity-input {
