@@ -136,4 +136,84 @@ function renderResults(result, portfolioData) {
     resultTypeNameElem.textContent = result.name;
     resultDescriptionElem.textContent = result.desc;
     memberListElem.innerHTML = portfolioData.map(stock => {
-        const stockValue = (stock.price * stock.quantity).toLocaleString('en-
+        const stockValue = (stock.price * stock.quantity).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        return `<span class="member-tag">${stock.symbol} (${stock.quantity}주, ${stockValue})</span>`;
+    }).join('');
+    renderSectorChart(result.sectorCounts);
+    resultCard.classList.remove('hidden');
+    resultCard.scrollIntoView({ behavior: 'smooth' });
+}
+
+// 차트 렌더링 함수
+function renderSectorChart(sectorValues) {
+    if (sectorChart) sectorChart.destroy();
+    
+    const chartColors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#34495e', '#1abc9c', '#e67e22'];
+    const labels = Object.keys(sectorValues);
+    const data = Object.values(sectorValues);
+
+    sectorChart = new Chart(sectorChartCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '금액 기준 섹터 비중',
+                data: data,
+                backgroundColor: labels.map((_, i) => chartColors[i % chartColors.length]),
+                borderColor: '#ffffff',
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 15, padding: 15 } },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed || 0;
+                            return `${context.label}: ${value.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+// --- 이벤트 리스너 설정 ---
+analyzeBtn.addEventListener('click', handleAnalysis);
+addRowBtn.addEventListener('click', addNewRow);
+resetBtn.addEventListener('click', resetInputFields);
+
+// 행 삭제 버튼 (이벤트 위임 방식)
+tickerListContainer.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('remove-row-btn')) {
+        if (tickerListContainer.childElementCount > 1) {
+            e.target.closest('.ticker-row').remove();
+        } else {
+            alert('최소 1개의 종목은 입력해야 합니다.');
+        }
+    }
+});
+
+// 정보 아이콘 툴팁 기능
+if (infoIcon && infoWrapper) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    
+    const specialEtfList = Object.keys(specialEtfWeights).join(', ');
+    tooltip.textContent = '분석 가능 ETF: ' + specialEtfList;
+    
+    infoWrapper.appendChild(tooltip);
+
+    infoIcon.addEventListener('mouseover', () => {
+        tooltip.style.display = 'block';
+    });
+
+    infoIcon.addEventListener('mouseout', () => {
+        tooltip.style.display = 'none';
+    });
+}
