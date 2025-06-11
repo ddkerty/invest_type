@@ -1,3 +1,4 @@
+// js/main.js (최종 완성 버전)
 import { fetchStockData } from './api.js';
 import { classifyPortfolio, specialEtfWeights } from './analyzer.js';
 
@@ -96,7 +97,6 @@ async function handleAnalysis() {
     try {
         const promises = inputs.map(async (input) => {
             const stockDataFromDB = await fetchStockData(input.ticker);
-            // [핵심 수정] DB 데이터(sector)와 사용자 입력 데이터(quantity, price)를 합쳐서 반환
             return stockDataFromDB ? { ...stockDataFromDB, quantity: input.quantity, price: input.price } : null;
         });
 
@@ -182,6 +182,7 @@ function renderSectorChart(sectorValues) {
         }
     });
 }
+
 
 // --- 이벤트 리스너 설정 ---
 analyzeBtn.addEventListener('click', handleAnalysis);
