@@ -29,15 +29,24 @@
                 <span class="header-label remove-header"></span>
             </div>
 
+            <div class="input-header">
+                <span class="header-label ticker-header">티커</span>
+                <span class="header-label price-header">매수 가격 ($)</span> 
+                <span class="header-label quantity-header">수량</span>
+                <span class="header-label remove-header"></span>
+            </div>
+            
             <div id="ticker-list-container">
                 <div class="ticker-row">
                     <input type="text" class="ticker-input" placeholder="예: AAPL" value="AAPL">
-                    <input type="number" class="quantity-input" placeholder="예: 10" min="1" value="10">
+                    <input type="number" class="price-input" placeholder="가격" min="0" step="0.01" value="170.00">
+                    <input type="number" class="quantity-input" placeholder="수량" min="1" value="10">
                     <button class="remove-row-btn" aria-label="종목 삭제">&times;</button>
                 </div>
                 <div class="ticker-row">
                     <input type="text" class="ticker-input" placeholder="예: JNJ" value="JNJ">
-                    <input type="number" class="quantity-input" placeholder="예: 20" min="1" value="20">
+                    <input type="number" class="price-input" placeholder="가격" min="0" step="0.01" value="150.50">
+                    <input type="number" class="quantity-input" placeholder="수량" min="1" value="20">
                     <button class="remove-row-btn" aria-label="종목 삭제">&times;</button>
                 </div>
             </div>
