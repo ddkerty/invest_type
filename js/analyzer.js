@@ -74,14 +74,14 @@ const resultTypes = {
 
 export function classifyPortfolio(portfolioData) {
     const points = { aggressive: 0, stable: 0, dividend: 0 };
-    const sectorValues = {}; 
+    const sectorValues = {}; // 섹터별 '금액'을 저장할 객체
 
     portfolioData.forEach(stock => {
         let weights;
         let displaySector = "N/A";
         const quantity = stock.quantity || 1;
         const price = stock.price || 0;
-        const stockValue = quantity * price; // 종목의 총 가치(금액) 계산
+        const stockValue = quantity * price;
 
         if (specialEtfWeights[stock.symbol]) {
             const specialEtf = specialEtfWeights[stock.symbol];
@@ -92,18 +92,16 @@ export function classifyPortfolio(portfolioData) {
             weights = sectorWeights[sectorKey];
             displaySector = stock.sector || "N/A";
         }
-
-        // [수정!] 점수 계산에 '투자 금액(stockValue)'을 가중치로 사용하도록 변경
+        
         points.aggressive += weights.aggressive * stockValue;
         points.stable     += weights.stable * stockValue;
         points.dividend   += weights.dividend * stockValue;
 
-        // 차트용 데이터도 '투자 금액' 기준으로 합산
         sectorValues[displaySector] = (sectorValues[displaySector] || 0) + stockValue;
     });
-
+    
     const sortedTypes = Object.entries(points).sort((a, b) => b[1] - a[1]);
-
+    
     if (sortedTypes.length === 0 || sortedTypes[0][1] === 0) {
         return { ...resultTypes.balanced, sectorCounts: sectorValues };
     }
@@ -115,10 +113,12 @@ export function classifyPortfolio(portfolioData) {
         const secondMaxPoints = sortedTypes[1][1];
         const pointDifference = maxPoints - secondMaxPoints;
         const threshold = Math.max(2, maxPoints * 0.2);
-
+        
         if (pointDifference < threshold && maxPoints > 0) {
             finalType = 'balanced';
         }
     }
-    return { ...resultTypes.finalType, sectorCounts: sectorValues };
+    
+    // [핵심 수정] 반환하는 객체에 모든 정보(name, icon, color, desc)가 포함되도록 수정
+    return { ...resultTypes[finalType], sectorCounts: sectorValues };
 }
