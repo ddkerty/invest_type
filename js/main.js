@@ -24,6 +24,7 @@ let sectorChart = null;
 // 새로운 입력 행 HTML 템플릿
 const createTickerRowHTML = () => `
     <input type="text" class="ticker-input" placeholder="티커">
+    <input type="number" class="price-input" placeholder="가격" min="0" step="0.01" value="100">
     <input type="number" class="quantity-input" placeholder="수량" min="1" value="1">
     <button class="remove-row-btn" aria-label="종목 삭제">&times;</button>
 `;
@@ -71,9 +72,11 @@ function getInputsFromDOM() {
     const inputs = [];
     tickerRows.forEach(row => {
         const ticker = row.querySelector('.ticker-input').value.trim().toUpperCase();
+        const price = parseFloat(row.querySelector('.price-input').value); // [추가] 가격 정보 읽기
         const quantity = parseInt(row.querySelector('.quantity-input').value, 10);
-        if (ticker && quantity > 0) {
-            inputs.push({ ticker, quantity });
+        
+        if (ticker && quantity > 0 && price >= 0) {
+            inputs.push({ ticker, quantity, price }); // [수정] price 포함
         }
     });
     return inputs;
@@ -132,28 +135,30 @@ function renderResults(result, portfolioData) {
     resultIconElem.innerHTML = `<i class="${result.icon} ${result.color}"></i>`;
     resultTypeNameElem.textContent = result.name;
     resultDescriptionElem.textContent = result.desc;
-    memberListElem.innerHTML = portfolioData.map(stock => 
-        `<span class="member-tag">${stock.symbol} (${stock.quantity}주)</span>`
-    ).join('');
+    // [수정] 태그에 총 평가금액도 표시
+    memberListElem.innerHTML = portfolioData.map(stock => {
+        const stockValue = (stock.price * stock.quantity).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        return `<span class="member-tag">${stock.symbol} (${stock.quantity}주, ${stockValue})</span>`;
+    }).join('');
     renderSectorChart(result.sectorCounts);
     resultCard.classList.remove('hidden');
     resultCard.scrollIntoView({ behavior: 'smooth' });
 }
 
 // 차트 렌더링 함수
-function renderSectorChart(sectorCounts) {
+function renderSectorChart(sectorValues) { // 변수명 변경: sectorCounts -> sectorValues
     if (sectorChart) sectorChart.destroy();
     
     const chartColors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#34495e', '#1abc9c', '#e67e22'];
-    const labels = Object.keys(sectorCounts);
-    const data = Object.values(sectorCounts);
+    const labels = Object.keys(sectorValues);
+    const data = Object.values(sectorValues);
 
     sectorChart = new Chart(sectorChartCanvas, {
         type: 'doughnut',
         data: {
             labels: labels,
             datasets: [{
-                label: '수량 기준 비중',
+                label: '금액 기준 섹터 비중', // [수정] 라벨 텍스트 변경
                 data: data,
                 backgroundColor: labels.map((_, i) => chartColors[i % chartColors.length]),
                 borderColor: '#ffffff',
@@ -168,7 +173,9 @@ function renderSectorChart(sectorCounts) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.label}: ${context.parsed.toLocaleString()}주`;
+                            // [수정] 툴팁에 수량 대신 금액(USD) 표시
+                            const value = context.parsed || 0;
+                            return `${context.label}: ${value.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`;
                         }
                     }
                 }
