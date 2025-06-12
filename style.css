@@ -63,23 +63,26 @@ header h1 {
     gap: 10px;
 }
 
+/* style.css 파일에서 아래 부분을 찾아 통째로 교체하세요. */
+
 .ticker-row {
     display: flex;
-    gap: 10px;
+    gap: 8px; /* 간격을 약간 줄여 공간 확보 */
     align-items: center;
 }
 
 .ticker-row .ticker-input {
-    flex-grow: 1;
+    flex: 1 1 40%;      /* 너비의 40%를 기준으로 유연하게 조절 */
+    min-width: 70px;    /* 아무리 줄어도 최소 너비는 유지 */
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 15px;
 }
 
-/* [추가] 가격 입력창 스타일 */
 .ticker-row .price-input {
-    width: 100px;
+    flex: 1 1 30%;      /* 너비의 30%를 기준으로 유연하게 조절 */
+    min-width: 65px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -88,7 +91,8 @@ header h1 {
 }
 
 .ticker-row .quantity-input {
-    width: 80px;
+    flex: 1 1 20%;      /* 너비의 20%를 기준으로 유연하게 조절 */
+    min-width: 50px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -97,6 +101,8 @@ header h1 {
 }
 
 .ticker-row .remove-row-btn {
+    /* 삭제 버튼은 크기 고정 */
+    flex-shrink: 0; /* 이 버튼은 줄어들지 않도록 설정 */
     width: 30px;
     height: 30px;
     border: none;
